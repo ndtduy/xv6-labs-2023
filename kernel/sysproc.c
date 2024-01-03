@@ -74,7 +74,28 @@ sys_sleep(void)
 int
 sys_pgaccess(void)
 {
-  // lab pgtbl: your code here.
+  uint64 curAddr, userAddr;
+  int numPages;
+  argaddr(0, &curAddr);
+  argint(1, &numPages);
+  argaddr(2, &userAddr);
+
+  uint64 bitmask = 0;
+  pagetable_t curPgtbl = myproc() -> pagetable;
+
+  for (int i = 0; i < numPages; i++) {
+    pte_t *pte = walk(curPgtbl, curAddr, 0);
+    if ((*pte) & PTE_A) {
+      bitmask |= (1 << i);
+      *pte &= ~(PTE_A); // clear PTE_A
+    }
+    curAddr += PGSIZE;
+  }
+
+  if (copyout(curPgtbl, userAddr, (char*)&bitmask, sizeof(bitmask)) < 0) {
+    return -1;
+  }
+
   return 0;
 }
 #endif
