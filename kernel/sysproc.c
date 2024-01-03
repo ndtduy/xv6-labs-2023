@@ -22,6 +22,23 @@ sys_getpid(void)
 }
 
 uint64
+sys_trace(void)
+{
+  
+  uint64 p;
+  argaddr(0, &p);
+  return trace(p);
+}
+
+uint64
+sys_sysinfo(void)
+{
+  uint64 p;
+  argaddr(0, &p);
+  return sysinfo(p);
+}
+
+uint64
 sys_fork(void)
 {
   return fork();

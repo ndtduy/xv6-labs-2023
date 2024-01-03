@@ -5,7 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
-
+#include "sysinfo.h"
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
@@ -14,6 +14,7 @@ struct proc *initproc;
 
 int nextpid = 1;
 struct spinlock pid_lock;
+struct sysinfo sinfor;
 
 extern void forkret(void);
 static void freeproc(struct proc *p);
@@ -299,6 +300,8 @@ fork(void)
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 
+  //copy trace_mask from parent
+  np->trace_mask = p->trace_mask;
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
 
@@ -533,6 +536,33 @@ forkret(void)
   }
 
   usertrapret();
+}
+
+int trace(uint64 trace_mask){
+
+  struct proc *p = myproc(); 
+  p->trace_mask = trace_mask;
+  return 0;
+}
+
+int sysinfo(uint64 sinfor_user){
+
+  sinfor.freemem = kcountfree()*4096;
+  sinfor.nproc = count_not_unusedproc();
+  struct proc *p = myproc();
+  if(copyout(p->pagetable, sinfor_user, (char *)&sinfor, sizeof(sinfor)) < 0)
+     return -1;
+  return 0;
+}
+int
+count_not_unusedproc()
+{
+  int count = 0;
+  struct proc *p;
+   for(p = proc; p < &proc[NPROC]; p++) {
+      if(p->state!= UNUSED) count++;
+  }
+  return count;
 }
 
 // Atomically release lock and sleep on chan.
