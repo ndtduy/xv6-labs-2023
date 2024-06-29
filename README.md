@@ -17,3 +17,6 @@ This repo contains the solution for the assignments of the OS course of fit@hcmu
 
 + Source code: [solution-pgtbl](https://github.com/ndtduy/xv6-labs-2023/commit/b0b2422879d47d4ee7e6c504dc88dceb4cd86c87).
 + Report: [report-pgtbl](https://github.com/ndtduy/xv6-labs-2023/blob/main/reports/report-pgtbl.pdf).
+
+## Credit
+This repo is for reference purpose only, do not use our work as a submission for the OS course assignments of fit@hcmus.
